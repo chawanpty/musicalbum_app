@@ -63,94 +63,123 @@ class HomePage extends StatelessWidget {
         title: const Text('🎵 อัลบั้มเพลงของฉัน'),
         backgroundColor: Colors.deepPurple,
       ),
-      body: albums.isEmpty
-          ? const Center(
-              child: Text(
-                'ยังไม่มีอัลบั้มเพลง',
-                style: TextStyle(fontSize: 18),
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(10),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.7,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
+      body:
+          albums.isEmpty
+              ? const Center(
+                child: Text(
+                  'ยังไม่มีอัลบั้มเพลง',
+                  style: TextStyle(fontSize: 18),
                 ),
-                itemCount: albums.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AlbumDetailScreen(
-                            album: albums[index],
-                            deleteAlbum: () => deleteAlbum(index),
-                          ),
+              )
+              : Padding(
+                padding: const EdgeInsets.all(10),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount: albums.length,
+                  itemBuilder: (context, index) {
+                    return Dismissible(
+                      key: Key(albums[index].name),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        color: Colors.red,
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 30,
                         ),
-                      );
-                    },
-                    child: Card(
-                      color: Colors.deepPurpleAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: albums[index].coverUrl.isNotEmpty &&
-                                    File(albums[index].coverUrl).existsSync()
-                                ? ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(12),
-                                      topRight: Radius.circular(12),
-                                    ),
-                                    child: Image.file(
-                                      File(albums[index].coverUrl),
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : const Icon(
-                                    Icons.album,
-                                    size: 80,
-                                    color: Colors.white,
-                                  ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Text(
-                                  albums[index].name,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                Text(
-                                  albums[index].artist,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white70,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
+                      onDismissed: (direction) {
+                        deleteAlbum(index);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'ลบอัลบั้ม ${albums[index].name} แล้ว',
                             ),
                           ),
-                        ],
+                        );
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => AlbumDetailScreen(
+                                    album: albums[index],
+                                    deleteAlbum: () => deleteAlbum(index),
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          color: Colors.deepPurpleAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child:
+                                    albums[index].coverUrl.isNotEmpty &&
+                                            File(
+                                              albums[index].coverUrl,
+                                            ).existsSync()
+                                        ? ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(12),
+                                            topRight: Radius.circular(12),
+                                          ),
+                                          child: Image.file(
+                                            File(albums[index].coverUrl),
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                        : const Icon(
+                                          Icons.album,
+                                          size: 80,
+                                          color: Colors.white,
+                                        ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      albums[index].name,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Text(
+                                      albums[index].artist,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white70,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         backgroundColor: Colors.deepPurple,
